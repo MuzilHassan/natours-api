@@ -10,9 +10,10 @@ Router.route('/top-tours').get(
 Router.route('/all')
   .post(tourController.addAll)
   .delete(tourController.deleteAll);
+Router.route('/tour-stats').get(tourController.tourStats);
+
 Router.route('/:id')
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
-
 module.exports = Router;

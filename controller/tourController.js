@@ -40,9 +40,7 @@ class apiFeature {
     this.querString = querString;
     this.query = query;
   }
-  filter(){
-    
-  }
+  filter() {}
 }
 
 exports.getTours = async (req, res) => {
@@ -220,6 +218,42 @@ exports.deleteAll = async (req, res) => {
     res.status(204).json({
       status: 'success',
       data: null,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
+};
+
+exports.tourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      { $match: { ratingsAverage: { $gte: 4.5 } } },
+      {
+        $group: {
+          _id: '$difficulty',
+          totalTours: { $sum: 1 },
+          numRating: { $sum: '$ratingsQuantity' },
+          ratingsAverage: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: {
+            $max: '$price',
+          },
+        },
+      },
+      {
+        $sort: {
+          avgPrice: 1,
+        },
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: stats,
     });
   } catch (error) {
     console.log(error);
