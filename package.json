@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "ndb server.js",
-    "start": "node --watch  server.js"
+    "start": "node --watch  server.js",
+    "prod": "set NODE_ENV=production&& nodemon server.js"
   },
   "author": "Muzil Hassan",
   "license": "ISC",
