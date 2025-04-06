@@ -19,6 +19,10 @@ const handleValidationError = (err) => {
   const message = `Validation error: ${values}`;
   return new AppError(message, 400);
 };
+
+const handleJsonWebTokenError = () => new AppError('Please login again ', 401);
+const handleTokenExpiredError = () =>
+  new AppError('Please login again, your token has been expire', 401);
 const sendErrorProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
@@ -54,6 +58,10 @@ const errorFunc = (err, req, res, next) => {
     if (err?.code === 11000) error = handleDupilacteValues(error);
 
     if (err?.name === 'ValidationError') error = handleValidationError(error);
+    if (err?.name == 'JsonWebTokenError')
+      error = handleJsonWebTokenError(error);
+    if (err?.name == 'TokenExpiredError')
+      error = handleTokenExpiredError(error);
     sendErrorProd(error, res);
   } else if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
