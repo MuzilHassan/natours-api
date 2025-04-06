@@ -60,9 +60,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!token) return next(new AppError('Your not authorized', 401));
   const decoded = await jwt.verify(token, process.env.JWT_SECRET);
 
-  const freshUser = await User.findById(decoded._id);
+  const freshUser = await User.findById(decoded.id);
+
   if (!freshUser) return next(new AppError('The user no longer exists', 401));
-  if (freshUser.passwordChangedAt(decoded.iat))
+  if (freshUser.changePasswordAfter(decoded.iat))
     return next(
       new appError(
         'Password was changed after token was issued! Please login again',
@@ -72,3 +73,13 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
+
+exports.restrictUser = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      return next(
+        new appError('You do not have permission to access this resouce', 403)
+      );
+    next();
+  };
+};

@@ -9,4 +9,4 @@ dev-data/
 
 # Ignore log files and environment variables (optional)
 *.log
-.env
+config.env
